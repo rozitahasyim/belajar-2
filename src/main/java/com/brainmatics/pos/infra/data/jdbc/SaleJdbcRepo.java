@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SaleJdbcRepo implements SaleRepo {
     private JdbcTemplate jdbc;
@@ -89,12 +90,16 @@ public class SaleJdbcRepo implements SaleRepo {
         jdbc.update(sqlSale, sale.getId(), sale.getCashier().getId());
         String sqlSli = "INSERT INTO salelineitem(saleid, productid, quantity, price) VALUES(?,?,?,?)";
 
-        List parmList = new ArrayList();
-        for(SaleLineItem sli : sale.getlineItems()){
-            Object[] params = new Object[] { sale.getId(), sli.getProduct().getId(), sli.getQuantity(), sli.getUnitprice()};
-            parmList.add(params);
-        }
-        jdbc.batchUpdate(sqlSli, parmList);
+ //       List parmList = new ArrayList();
+//        for(SaleLineItem sli : sale.getlineItems()){
+//            Object[] params = new Object[] { sale.getId(), sli.getProduct().getId(), sli.getQuantity(), sli.getUnitprice()};
+//            parmList.add(params);
+//        }
+        List<Object[]> paramList = sale.getlineItems()
+              .stream()
+              .map(sli -> new Object[]{sale.getId(), sli.getProduct().getId(), sli.getQuantity(), sli.getUnitprice()})
+              .collect(Collectors.toList());
+        jdbc.batchUpdate(sqlSli, paramList);
     }
 
     @Override

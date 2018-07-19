@@ -133,7 +133,7 @@ public class PosApplication implements CommandLineRunner {
 		p3.setPrice(BigDecimal.valueOf(5000));
 //
 		Sale s1 = new Sale();
-		s1.setId(3);
+		s1.setId(4);
 		s1.setCashier(e2);
 
         s1.addlineItems(p1,1);
